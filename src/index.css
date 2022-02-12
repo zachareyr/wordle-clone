@@ -75,6 +75,23 @@ code {
   font-size: 16px;
   border-radius: 15%;
 }
+.keyboard-square > p {
+  margin-top: -0.15rem;
+}
+.keyboard-square-wrong {
+  border: 2px solid rgba(58, 58, 60, 255);
+  background: rgba(58, 58, 60, 255);
+}
+.keyboard-square-correct {
+  border: 2px solid rgba(83, 141, 78, 255);
+  background: rgba(83, 141, 78, 255);
+}
+
+.keyboard-square-wrong-position {
+  border: 2px solid rgba(181, 159, 59, 255);
+  background: rgba(181, 159, 59, 255);
+}
+
 .keyboard-square-width-2 {
   width: 68px;
   border-radius: 10%;

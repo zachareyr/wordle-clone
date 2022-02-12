@@ -1,41 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-// function useKey(key, cb) {
-//   const callbackRef = useRef(cb);
-
-//   useEffect(() => {
-//     callbackRef.current = cb;
-//   })
-
-//   useEffect(() => {
-//     function handle(event) {
-//       if (event.code === key) {
-//         callbackRef.current(e)
-//       }
-//     }
-
-//     document.addEventListener("keydown", handle)
-//     return () => document.removeEventListener("keydown", handle)
-//   }, [key])
-// }
-
-// function test() {
-//   useKey("Enter", handleKey)
-// }
-
-class Input extends React.Component {
-  _handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      console.log('do validate');
-    }
-  }
-
-  render() {
-    return <input type="text" onKeyDown={this._handleKeyDown} />
-  }
-}
 
 class NextRowButton extends React.Component {
   render() {
@@ -52,6 +18,7 @@ class NextRowButton extends React.Component {
     )
   } 
 }
+
 class Square extends React.Component {
   render()
   {
@@ -68,7 +35,7 @@ class Square extends React.Component {
         _class += " square-wrong-position"
         break;
       case 3:
-        _class += "square-correct"
+        _class += " square-correct"
         break;
     }
     return (
@@ -85,11 +52,23 @@ class KeyboardSquare extends React.Component {
     let name = "keyboard-square"
     if (this.props.width==2) {
       name+=" keyboard-square-width-2"
+    } else {
+      switch (this.props.status) {
+        case 1:
+          name+=" keyboard-square-wrong"
+          break;
+        case 2:
+          name+=" keyboard-square-wrong-position"
+          break;
+        case 3:
+          name+=" keyboard-square-correct"
+          break;
+      }
     }
     return (
       <button className={name}
       onClick={() => this.props.onClick()}>
-        {this.props.value}
+        <p>{this.props.value}</p>
       </button>
     )
   }
@@ -103,12 +82,20 @@ class Game extends React.Component {
     this.state = {
       squares: Array(25).fill(null),
       keyboard: ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "Enter", "Z", "X", "C", "V", "B", "N", "M", "<-"],
+      keyboardStatus: Array(28).fill(0),
       status: Array(25).fill(0),
       row: 0,
       column: 0,
+      word: ["M", "I", "K", "E", "Y"]
     };
   }
 
+  endGame(win) {
+    // win = true: won
+    // win = false: lost
+    // TODO this function
+    alert(win)
+  }
   renderKeyBoardSquare(i)
   {
     // 19 / 27
@@ -120,6 +107,7 @@ class Game extends React.Component {
     }
     return <KeyboardSquare
     value={this.state.keyboard[i]} 
+    status={this.state.keyboardStatus[i]}
     onClick={() => this.handleKeyboardClick(i)} 
     width={1}
     />
@@ -133,15 +121,9 @@ class Game extends React.Component {
     } else if (this.state.row * 5 + this.state.column == i) selected = true;
     return <Square
     value={this.state.squares[i]}
-    onClick={() => this.handleClick(i)} 
     status={status}
     selected={selected}
     />
-  }
-
-  handleClick(i)
-  {
-    return
   }
 
   createNextRowButton(i) {
@@ -151,7 +133,7 @@ class Game extends React.Component {
     }
     return (
       <NextRowButton
-        onClick={() => this.handleNextRowClick(i)}
+        onClick={() => this.handleNextRowClick()}
         active={active}
       />
     )
@@ -159,7 +141,47 @@ class Game extends React.Component {
 
   handleNextRowClick() {
     // TODO check against word, highlight squares on board and keyboard
+    if (this.state.row == 4) {
+      this.endGame(false)
+    }
+    let status = this.state.status;
+    for (let i=0; i<5; i++) {
+      if (this.state.squares[this.state.row*5+i] == this.state.word[i]) {
+        status[this.state.row*5+i] = 3
+      } else {
+        let letterInWord = false;
+        for (let j=0; j<this.state.word.length; j++) {
+          if (this.state.word[j] === this.state.squares[this.state.row*5+i]) {
+            letterInWord = true
+            break
+          }
+        }
+        if (letterInWord) {
+          status[this.state.row*5+i] = 2
+        } else {
+          status[this.state.row*5+i] = 1
+        }
+      }
+
+    }
     this.setState({
+      status: status
+    })
+
+    let wordIsCorrect=true // iterate through all letters of the word, and if none of them are wrong, end the game
+    let keyboardStatus = this.state.keyboardStatus;
+    for (let i=0; i<5; i++) {
+      keyboardStatus[this.state.keyboard.indexOf(this.state.squares[this.state.row*5+i])] = this.state.status[this.state.row*5+i]
+      if (this.state.status[this.state.row*5+i] != 3) {
+        wordIsCorrect = false
+      }
+    }
+    if (wordIsCorrect) {
+      this.endGame(true)
+      return
+    }
+    this.setState({
+      keyboardStatus: keyboardStatus,
       column: 0,
       row: this.state.row+1,
     })
@@ -167,16 +189,28 @@ class Game extends React.Component {
 
   handleKeyboardClick(i)
   {
+    // 19 : enter
+    // 27 : backspace
     let column = this.state.column
     let row = this.state.row
     let squares = this.state.squares;
 
-    if (column == 5) {
-      return
-    }
+    if (i == 27) {
+      if (column != 0) {
+        column -= 1
+        squares[row * 5+column] = null
+      }
+    } else if (i==19) {
+      if (column == 5) {
+        this.handleNextRowClick()
+        return
+      }
+    } else {
+      if (column == 5) return
       column += 1
-
-    squares[(this.state.row)*5+this.state.column] = this.state.keyboard[i]
+      squares[(this.state.row)*5+this.state.column] = this.state.keyboard[i]
+    }
+    
     this.setState({
       squares: squares,
       column: column,
@@ -189,7 +223,7 @@ class Game extends React.Component {
     return (
       <React.Fragment>
         <div className="board">
-          <div className="title-text">Wordle</div>
+          <div className="title-text">Wordle Clone</div>
           <div className="board-row">
             {this.renderSquare(0,this.state.status[0])}
             {this.renderSquare(1,this.state.status[1])}
@@ -262,9 +296,6 @@ class Game extends React.Component {
             {this.renderKeyBoardSquare(18)}
           </div>
           <div className="keyboard-row">
-            {/* <div className="quarter-fill"></div>
-            <div className="quarter-fill"></div>
-            <div className="quarter-fill"></div> */}
             {this.renderKeyBoardSquare(19)}
             {this.renderKeyBoardSquare(20)}
             {this.renderKeyBoardSquare(21)}
