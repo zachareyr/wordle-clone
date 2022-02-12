@@ -14,6 +14,33 @@ code {
     monospace;
 }
 
+.retry-button {
+  background: rgba(129, 131, 132, 255);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  color: rgba(255, 255, 255, 255);
+  border: 1px solid #999;
+  float: left;
+  font-size: 24px;
+  font-weight: bold;
+  line-height: 34px;
+  height: 34px;
+  margin-left: 5px;
+  margin-right: 3px;
+  margin-bottom: 5px;
+  padding: 0;
+  text-align: center;
+  width: 50px;
+  font-weight: lighter;
+  font-size: 16px;
+  border-radius: 15%;
+  cursor: pointer;
+}
+
+.retry-button > p {
+  margin-top: -0.1rem;
+}
 .title-text {
   width: 365px;
   margin-bottom: 1rem;
@@ -29,6 +56,7 @@ code {
 }
 
 .keyboard {
+  width: 450px;
   margin-left: 5rem;
   margin-top: 2.5rem;
 }
@@ -71,6 +99,7 @@ code {
   padding: 0;
   text-align: center;
   width: 34px;
+  cursor: pointer;
   font-weight: lighter;
   font-size: 16px;
   border-radius: 15%;
@@ -92,6 +121,14 @@ code {
   background: rgba(181, 159, 59, 255);
 }
 
+.square-extra-width {
+  background: rgb(56, 56, 56);
+  border: none;
+  margin-top: 6px;
+  margin-left: 41px;
+  width: 136px;
+  border-radius: 5%;
+}
 .keyboard-square-width-2 {
   width: 68px;
   border-radius: 10%;
