@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
+
+// TODO Verify guesses as real words
 class Button extends React.Component {
   render() {
     return (
@@ -2615,7 +2617,13 @@ class Game extends React.Component {
     this.setState({
       playing: false,
     })
+    if (win) {
+      alert("Good job!")
+    } else {
+      alert("Better luck next time.")
+    }
   }
+
   renderKeyBoardSquare(i)
   {
     // 19 / 27
